@@ -66,7 +66,13 @@ services:
                 -Dalfresco.restApi.basicAuthScheme=true
                 -Dauthentication.protection.enabled=false
                 -XX:+UseG1GC -XX:+UseStringDeduplication
-                -Dgoogledocs.enabled=true  
+                -Dgoogledocs.enabled=true
+                -Demail.inbound.unknownUser=anonymous
+                -Demail.inbound.enabled=true
+                -Demail.server.enabled=true
+                -Demail.server.port=25
+                -Demail.server.domain=ubuntu-be
+                -Demail.server.allowed.senders=.*
                 -Dmail.host=smtp.gmail.com
                 -Dmail.port=465
                 -Dmail.username=b.etiennot@gmail.com
@@ -74,12 +80,12 @@ services:
                 -Dmail.protocol=smtps
                 -Dmail.encoding=UTF-8
                 -Dmail.smtp.timeout=3000
+                -Dmail.smtps.starttls.enable=true
+                -Dmail.smtps.auth=true
                 -Dmail.testmessage.send=True
                 -Dmail.testmessage.to=b.etiennot@gmail.com
                 -Dmail.testmessage.subject="Mail from Alfresco"
                 -Dnotification.email.siteinvite=True
-                -Dmail.smtps.starttls.enable=true
-                -Dmail.smtps.auth=true 
                 -Dauthentication.chain=alfinst:alfrescoNtlm,ldap1:ldap
                 -Dldap.authentication.active=true
                 -Dldap.authentication.java.naming.provider.url=ldap://openldap:389
@@ -99,12 +105,55 @@ services:
           start_period: 1m
         volumes: 
             - ./data/alf-repo-data:/usr/local/tomcat/alf_data
-            - ./logs/alfresco:/usr/local/tomcat/logs    
-        
+            - ./logs/alfresco:/usr/local/tomcat/logs
+
+#         extra_hosts:
+#             - "host.docker.internal:host-gateway"
+
         ports:
+
+            - 25:25
+            - 143:143
+            - 465:465
             - 2121:2121
             - 2433:2433
             - 2434:2434 
+
+#             - 25:25
+
+#                 -Dimap.server.enabled=True
+#                 -Dimap.server.host=0.0.0.0
+#                 -Dimap.server.port=143
+#                 -Dmail.host=smtp
+#                 -Dmail.port=25
+#                 -Dmail.username=anonymous
+#                 -Dmail.encoding=UTF-8
+#                 -Dmail.protocol=smtp
+#                 -Dmail.smtp.auth=false
+#                 -Dmail.smtps.starttls.enable=false
+#                 -Dmail.smtps.auth=false
+#                 -Dmail.from.default=alfresco@localhost
+#                 -Dmail.smtp.timeout=3000
+
+#                 -Dmail.username=anonymous
+#                 -Dmail.password=
+
+#                 -Dmail.host=smtp.gmail.com
+#                 -Dmail.port=465
+#                 -Dmail.username=b.etiennot@gmail.com
+#                 -Dmail.password=xkzpomzdmqhvheps
+#                 -Dmail.protocol=smtps
+#                 -Dmail.encoding=UTF-8
+#                 -Dmail.smtp.timeout=3000
+#                 -Dmail.smtps.starttls.enable=true
+#                 -Dmail.smtps.auth=true
+
+#                 -Demail.inbound.unknownUser=anonymous
+#                 -Demail.inbound.enabled=true
+#                 -Demail.server.enabled=true
+#                 -Demail.server.port=25
+#                 -Demail.server.domain=ubuntu-be
+#                 -Demail.server.allowed.senders=.*
 
     transform-core-aio:
         image: alfresco/alfresco-transform-core-aio:${TRANSFORM_ENGINE_TAG}
@@ -246,9 +295,12 @@ services:
             - 80:80
 
     
-    smtp:
-        image: mwader/postfix-relay
-        mem_limit: 128m
+#     smtp:
+#         image: mwader/postfix-relay
+#         mem_limit: 128m
+#         ports:
+#             - "25:25" # SMTP port
+        
     
 
     
